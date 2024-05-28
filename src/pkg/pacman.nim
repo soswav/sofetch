@@ -1,3 +1,8 @@
+# This isn't even complex AT ALL
+# But it beats anything else.
+# Pacman - Q | wc -l = 0.009s
+# find /var/lib/pacman/local -mindepth 1 -maxdepth 1 -type d | wc -l = 0.003
+# THIS = 0.001
 import os
 
 proc countItemsInDir(dirPath: string): int =
