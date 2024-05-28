@@ -1,4 +1,4 @@
-import os, strutils, std/locks
+import os, strutils, strformat
 
 type
   OSInfo* = object
@@ -7,6 +7,7 @@ type
     operatingSystem*: string
     kernelVersion*: string
     machineName*: string
+    uptime*: string
 
 type
   ThreadData[T] = ref object
@@ -34,6 +35,15 @@ proc fetchMachineNameThread(data: ThreadData[string]) {.thread.} =
       data.value = line.split(":")[1].strip()
       break
 
+proc fetchUptimeThread(data: ThreadData[string]) {.thread.} =
+  let uptimeContent = readFile("/proc/uptime").split()[0]
+  let uptimeSeconds = parseFloat(uptimeContent).int
+  let days = uptimeSeconds div (24 * 3600)
+  let hours = (uptimeSeconds mod (24 * 3600)) div 3600
+  let minutes = (uptimeSeconds mod 3600) div 60
+  let seconds = uptimeSeconds mod 60
+  data.value = fmt"{days}d {hours}h {minutes}m {seconds}s"
+
 proc getOSInfo*(): OSInfo =
   var
     userData = ThreadData[string](value: "")
@@ -41,21 +51,24 @@ proc getOSInfo*(): OSInfo =
     osData = ThreadData[string](value: "")
     kernelData = ThreadData[string](value: "")
     machineData = ThreadData[string](value: "")
-    tUser, tHostname, tOS, tKernel, tMachine: Thread[ThreadData[string]]
+    uptimeData = ThreadData[string](value: "")
+    tUser, tHostname, tOS, tKernel, tMachine, tUptime: Thread[ThreadData[string]]
 
   createThread(tUser, fetchUserThread, userData)
   createThread(tHostname, fetchHostnameThread, hostnameData)
   createThread(tOS, fetchOSThread, osData)
   createThread(tKernel, fetchKernelVersionThread, kernelData)
   createThread(tMachine, fetchMachineNameThread, machineData)
+  createThread(tUptime, fetchUptimeThread, uptimeData)
 
   joinThread(tUser)
   joinThread(tHostname)
   joinThread(tOS)
   joinThread(tKernel)
   joinThread(tMachine)
+  joinThread(tUptime)
 
   return OSInfo(user: userData.value, hostname: hostnameData.value,
                 operatingSystem: osData.value, kernelVersion: kernelData.value,
-                machineName: machineData.value)
+                machineName: machineData.value, uptime: uptimeData.value)
 

@@ -20,4 +20,4 @@ echo fmt("Hostname: {osInformation.hostname}")
 echo fmt("Operating System: {osInformation.operatingSystem}")
 echo fmt("Kernel Version: {osInformation.kernelVersion}")
 echo fmt("Machine Name: {osInformation.machineName}")
-
+echo fmt("Uptime: {osInformation.uptime}")
