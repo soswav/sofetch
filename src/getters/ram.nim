@@ -11,10 +11,8 @@ type
 var lock: Lock
 
 proc parseMemoryValue(line: string): int64 =
-  let
-    parts = line.split(":")
-    valueStr = parts[1].strip().split()[0]
-  # Convert from kB to MB
+  let parts = line.split(":")
+  let valueStr = parts[1].strip().split()[0]
   result = int64(parseInt(valueStr) div 1024)
 
 proc getMemoryInfo*(): MemoryInfo =
