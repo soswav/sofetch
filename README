@@ -1,12 +1,29 @@
 
-   _____     ___     ______     __       __    __
-  / ___/____/__ \   / ____/__  / /______/ /_  / /
-  \__ \/ __ \/ _/  / /_  / _ \/ __/ ___/ __ \/ / 
- ___/ / /_/ /_/   / __/ /  __/ /_/ /__/ / / /_/  
-/____/\____(_)   /_/    \___/\__/\___/_/ /_(_)   
-                  So? Fetch!                                                 
-fetch tool based on nitch which is based on neofetch
+                   _____     ___     ______     __       __    __
+                  / ___/____/__ \   / ____/__  / /______/ /_  / /
+                  \__ \/ __ \/ _/  / /_  / _ \/ __/ ___/ __ \/ / 
+                 ___/ / /_/ /_/   / __/ /  __/ /_/ /__/ / / /_/  
+                /____/\____(_)   /_/    \___/\__/\___/_/ /_(_)   
+                                    So? Fetch!                                                 
+     fetch tool based on nitch which is based on something which is based on neofetch
 
 
 // info
-  this is a work in progress, punk!
+  sofetch ("so" for short) is a fetch tool that tries to be as fast as
+  possible (sounds familiar?) while also being good-looking!
+
+  currently, this is being maintained by both abb3v and soswav (even though
+  i don't do anything (mostly))
+// frequently asked questions (not really, but you get it)
+  // why the name?
+    the name comes from the fact that almost every
+	unixporn setup has either neofetch or a neofetch-based fetch tool!
+  // why make this?
+    ...i was bored! this seemed simple enough as well (spoiler: it wasn't!)
+  // how fast is this compared to nitch?
+    nitch  0.00s user 0.00s system 84% cpu 0.003 total            (compiled from source)
+    ./src/sofetch  0.00s user 0.00s system 79% cpu 0.004 total    (compiled from source)
+  // how can i contribute?
+    open an issue, pr, the usual
+
+\\\\ sofetch by soswav is licensed under the BOLA License (real)
