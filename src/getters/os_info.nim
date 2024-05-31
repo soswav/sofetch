@@ -1,4 +1,4 @@
-import os, strutils, strformat
+import os, strutils, std/parsecfg, strformat
 
 type
   OSInfo* = object
@@ -8,10 +8,17 @@ type
     kernelVersion*: string
     machineName*: string
     uptime*: string
+    distroID*: string
 
 type
   ThreadData[T] = ref object
     value: T
+
+proc createAndJoinThread[T](procPtr: proc (data: ThreadData[T]) {.thread.}, data: ThreadData[T]): Thread[ThreadData[T]] =
+  var thread: Thread[ThreadData[T]]
+  createThread(thread, procPtr, data)
+  joinThread(thread)
+  return thread
 
 proc fetchUserThread(data: ThreadData[string]) {.thread.} =
   data.value = getenv("USER")
@@ -44,6 +51,10 @@ proc fetchUptimeThread(data: ThreadData[string]) {.thread.} =
   let seconds = uptimeSeconds mod 60
   data.value = fmt"{days}d {hours}h {minutes}m {seconds}s"
 
+proc fetchDistroIDThread*(data: ThreadData[string]) {.thread.} =
+  let osRelease = "/etc/os-release".loadConfig
+  data.value = osRelease.getSectionValue("", "ID", "")
+
 proc getOSInfo*(): OSInfo =
   var
     userData = ThreadData[string](value: "")
@@ -52,23 +63,23 @@ proc getOSInfo*(): OSInfo =
     kernelData = ThreadData[string](value: "")
     machineData = ThreadData[string](value: "")
     uptimeData = ThreadData[string](value: "")
-    tUser, tHostname, tOS, tKernel, tMachine, tUptime: Thread[ThreadData[string]]
+    distroIDData = ThreadData[string](value: "")
 
-  createThread(tUser, fetchUserThread, userData)
-  createThread(tHostname, fetchHostnameThread, hostnameData)
-  createThread(tOS, fetchOSThread, osData)
-  createThread(tKernel, fetchKernelVersionThread, kernelData)
-  createThread(tMachine, fetchMachineNameThread, machineData)
-  createThread(tUptime, fetchUptimeThread, uptimeData)
+  let threadFuncs: seq[proc (data: ThreadData[string]) {.thread.}] = @[
+    fetchUserThread, fetchHostnameThread, fetchOSThread,
+    fetchKernelVersionThread, fetchMachineNameThread, fetchUptimeThread,
+    fetchDistroIDThread
+  ]
 
-  joinThread(tUser)
-  joinThread(tHostname)
-  joinThread(tOS)
-  joinThread(tKernel)
-  joinThread(tMachine)
-  joinThread(tUptime)
+  var threadData: seq[ThreadData[string]] = @[
+    userData, hostnameData, osData, kernelData, machineData, uptimeData, distroIDData
+  ]
+
+  for i in 0..<threadFuncs.len:
+    discard createAndJoinThread(threadFuncs[i], threadData[i])
 
   return OSInfo(user: userData.value, hostname: hostnameData.value,
                 operatingSystem: osData.value, kernelVersion: kernelData.value,
-                machineName: machineData.value, uptime: uptimeData.value)
+                machineName: machineData.value, uptime: uptimeData.value,
+                distroID: distroIDData.value)
 

@@ -8,4 +8,4 @@ bin = @["sofetch"]
 requires "nim >= 1.4.0", "db_connector"
 
 task build, "Build the project":
-  exec "nim c --threads:on src/sofetch.nim"
+  exec "nim c --threads:on -d:release src/sofetch.nim"
