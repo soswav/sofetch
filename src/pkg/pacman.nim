@@ -4,13 +4,9 @@
 # [THIS] = 0.001
 import os
 
-proc countItemsInDir(dirPath: string): int =
+proc pacmanPkg*(): int =
   var itemCount = 0
+  let dirPath = "/var/lib/pacman/local"
   for _ in walkDir(dirPath):
     inc(itemCount)
   return itemCount
-
-let dirPath = "/var/lib/pacman/local"
-let itemCount = countItemsInDir(dirPath)
-echo itemCount
-

@@ -1,4 +1,4 @@
-import getters/ram, getters/os_info
+import getters/os_info, getters/ram, getters/pkgs
 import strformat
 
 let osInformation = getOSInfo()
@@ -17,3 +17,4 @@ echo fmt("Machine Name: {osInformation.machineName}")
 echo fmt("Uptime: {osInformation.uptime}")
 echo fmt("Distro ID: {osInformation.distroID}")
 
+echo fmt("Package Count: {getPkgCount()}")
