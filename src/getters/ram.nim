@@ -1,4 +1,4 @@
-import strutils, std/locks
+import strutils
 
 type
   MemoryInfo* = object
@@ -7,8 +7,6 @@ type
     available*: int64
     buffers*: int64
     cached*: int64
-
-var lock: Lock
 
 proc parseMemoryValue(line: string): int64 =
   let parts = line.split(":")
@@ -27,13 +25,4 @@ proc getMemoryInfo*(): MemoryInfo =
     of "Cached": memInfo.cached = parseMemoryValue(line)
   return memInfo
 
-initLock(lock)
-
-proc fetchMemoryInfoThread*(memInfoPtr: ptr MemoryInfo) {.thread.} =
-  var localMemInfo = getMemoryInfo()
-  acquire(lock)
-  memInfoPtr[] = localMemInfo
-  release(lock)
-
-deinitLock(lock)
 
